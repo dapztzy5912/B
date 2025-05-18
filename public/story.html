@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StoryShare - Story</title>
+    <style>
+             {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f0f2f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #ffffff;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff6b6b;
+            text-decoration: none;
+        }
+        .nav-items {
+            display: flex;
+            gap: 20px;
+        }
+        .nav-items a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+        }
+        .nav-items a:hover {
+            color: #ff6b6b;
+        }
+        .auth-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .auth-btn {
+            padding: 8px 15px;
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .auth-btn:hover {
+            background-color: #ff5252;
+        }
+        .story-header {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .story-title {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .story-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .author-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .author-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .author-name {
+            font-weight: 500;
+            color: #333;
+        }
+        .story-date {
+            color: #777;
+            font-size: 14px;
+        }
+        .story-cover {
+            width: 100%;
+            max-height: 400px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-bottom: 20px;
+        }
+        .story-content {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 20px;
+            line-height: 1.8;
+            color: #333;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .story-content p {
+            margin-bottom: 20px;
+        }
+        .comments-section {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .comment-form {
+            margin-bottom: 30px;
+        }
+        .comment-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            resize: none;
+        }
+        .comment-input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+        }
+        .comment-btn {
+            padding: 10px 20px;
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .comment-btn:hover {
+            background-color: #ff5252;
+        }
+        .comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .comment {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+        .comment:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .comment-user-img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .comment-user-name {
+            font-weight: 500;
+            color: #333;
+        }
+        .comment-date {
+            color: #777;
+            font-size: 12px;
+            margin-left: auto;
+        }
+        .comment-text {
+            line-height: 1.6;
+            color: #555;
+        }
+        .hidden {
+            display: none;
+        }
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        .profile-pic {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: #ddd;
+            object-fit: cover;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .modal-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #ff6b6b;
+        }
+        .form-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            margin-top: 15px;
+        }
+        .form-btn:hover {
+            background-color: #ff5252;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #666;
+        }
+        .story-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .action-btn {
+            padding: 8px 15px;
+            background-color: #f0f2f5;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .action-btn:hover {
+            background-color: #e4e6eb;
+        }
+        .like-btn.active {
+            background-color: #ff6b6b;
+            color: white;
+            border-color: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="navbar">
+                <a href="index.html" class="logo">StoryShare</a>
+                <div class="nav-items">
+                    <a href="index.html">Home</a>
+                    <a href="#" id="browseLinkNav">Browse</a>
+                </div>
+                <div class="auth-section">
+                    <div class="guest-view">
+                        <button class="auth-btn" id="loginBtn">Login</button>
+                        <button class="auth-btn" id="registerBtn">Register</button>
+                    </div>
+                    <div class="user-view hidden">
+                        <div class="profile-section" id="profileLink">
+                            <img src="/api/placeholder/35/35" alt="Profile Picture" class="profile-pic" id="navProfilePic">
+                            <span id="navUsername">Username</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="story-header">
+            <h1 class="story-title" id="storyTitle">Story Title</h1>
+            <div class="story-meta">
+                <div class="author-info" id="authorInfo">
+                    <img src="/api/placeholder/40/40" alt="Author" class="author-img" id="authorImg">
+                    <span class="author-name" id="authorName">Author Name</span>
+                </div>
+                <span class="story-date" id="storyDate">May 18, 2025</span>
+            </div>
+            <img src="/api/placeholder/800/400" alt="Story Cover" class="story-cover" id="storyCover">
+            <div class="story-actions">
+                <button class="action-btn like-btn" id="likeBtn">❤ Like</button>
+                <button class="action-btn" id="shareBtn">Share</button>
+            </div>
+        </div>
+
+        <div class="story-content" id="storyContent">
+            <!-- Story content will be loaded here -->
+        </div>
+
+        <div class="comments-section">
+            <h2 class="section-title">Comments</h2>
+            <div class="comment-form" id="commentFormContainer">
+                <textarea class="comment-input" id="commentInput" placeholder="Write a comment..." rows="3"></textarea>
+                <button class="comment-btn" id="submitCommentBtn">Submit</button>
+            </div>
+            <div class="comments-list" id="commentsList">
+                <!-- Comments will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeLoginBtn">&times;</button>
+            <h2 class="modal-title">Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginUsername">Username</label>
+                    <input type="text" id="loginUsername" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" class="form-control" required>
+                </div>
+                <button type="submit" class="form-btn">Login</button>
+            </form>
+            <p style="text-align: center; margin-top: 15px;">Don't have an account? <a href="#" id="switchToRegister">Register</a></p>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeRegisterBtn">&times;</button>
+            <h2 class="modal-title">Register</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerUsername">Username</label>
+                    <input type="text" id="registerUsername" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerBio">Bio (Optional)</label>
+                    <textarea id="registerBio" class="form-control" rows="3"></textarea>
+                </div>
+                <button type="submit" class="form-btn">Register</button>
+            </form>
+            <p style="text-align: center; margin-top: 15px;">Already have an account? <a href="#" id="switchToLogin">Login</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const guestView = document.querySelector('.guest-view');
+            const userView = document.querySelector('.user-view');
+            const loginBtn = document.getElementById('loginBtn');
+            const registerBtn = document.getElementById('registerBtn');
+            const loginModal = document.getElementById('loginModal');
+            const registerModal = document.getElementById('registerModal');
+            const closeLoginBtn = document.getElementById('closeLoginBtn');
+            const closeRegisterBtn = document.getElementById('closeRegisterBtn');
+            const switchToRegister = document.getElementById('switchToRegister');
+            const switchToLogin = document.getElementById('switchToLogin');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const profileLink = document.getElementById('profileLink');
+            const navUsername = document.getElementById('navUsername');
+            const navProfilePic = document.getElementById('navProfilePic');
+            const commentFormContainer = document.getElementById('commentFormContainer');
+            const commentInput = document.getElementById('commentInput');
+            const submitCommentBtn = document.getElementById('submitCommentBtn');
+            const commentsList = document.getElementById('commentsList');
+            const likeBtn = document.getElementById('likeBtn');
+            const shareBtn = document.getElementById('shareBtn');
+            const browseLinkNav = document.getElementById('browseLinkNav');
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const storyId = urlParams.get('id');
+            
+            if (!storyId) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            checkLoggedInStatus();
+            
+            loadStory(storyId);
+
+            loadComments(storyId);
+
+            loginBtn.addEventListener('click', () => {
+                loginModal.style.display = 'flex';
+            });
+
+            registerBtn.addEventListener('click', () => {
+                registerModal.style.display = 'flex';
+            });
+
+            closeLoginBtn.addEventListener('click', () => {
+                loginModal.style.display = 'none';
+            });
+
+            closeRegisterBtn.addEventListener('click', () => {
+                registerModal.style.display = 'none';
+            });
+
+            switchToRegister.addEventListener('click', (e) => {
+                e.preventDefault();
+                loginModal.style.display = 'none';
+                registerModal.style.display = 'flex';
+            });
+
+            switchToLogin.addEventListener('click', (e) => {
+                e.preventDefault();
+                registerModal.style.display = 'none';
+                loginModal.style.display = 'flex';
+            });
+
+            profileLink.addEventListener('click', () => {
+                window.location.href = 'index.html#profile';
+            });
+
+            browseLinkNav.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.location.href = 'index.html';
+            });
+
+            submitCommentBtn.addEventListener('click', async () => {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                
+                if (!currentUser) {
+                    loginModal.style.display = 'flex';
+                    return;
+                }
+                
+                const commentText = commentInput.value.trim();
+                
+                if (!commentText) {
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('/api/comments', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            storyId,
+                            userId: currentUser.id,
+                            content: commentText
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        commentInput.value = '';
+                        loadComments(storyId);
+                    } else {
+                        alert(data.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                }
+            });
+
+            likeBtn.addEventListener('click', async () => {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                
+                if (!currentUser) {
+                    loginModal.style.display = 'flex';
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(`/api/stories/${storyId}/like`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            userId: currentUser.id
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        likeBtn.classList.toggle('active');
+                        likeBtn.textContent = likeBtn.classList.contains('active') ? '❤ Liked' : '❤ Like';
+                    } else {
+                        alert(data.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                }
+            });
+
+            shareBtn.addEventListener('click', () => {
+                const url = window.location.href;
+                
+                if (navigator.share) {
+                    navigator.share({
+                        title: document.getElementById('storyTitle').textContent,
+                        url: url
+                    })
+                    .catch(error => console.error('Error sharing:', error));
+                } else {
+                    navigator.clipboard.writeText(url)
+                        .then(() => alert('Link copied to clipboard!'))
+                        .catch(error => console.error('Error copying to clipboard:', error));
+                }
+            });
+
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const username = document.getElementById('loginUsername').value;
+                const password = document.getElementById('loginPassword').value;
+                
+                try {
+                    const response = await fetch('/api/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ username, password })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        localStorage.setItem('currentUser', JSON.stringify(data.user));
+                        updateUIAfterLogin(data.user);
+                        loginModal.style.display = 'none';
+                        loginForm.reset();
+                    } else {
+                        alert(data.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                }
+            });
+
+            registerForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const username = document.getElementById('registerUsername').value;
+                const password = document.getElementById('registerPassword').value;
+                const bio = document.getElementById('registerBio').value;
+                
+                try {
+                    const response = await fetch('/api/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ username, password, bio })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        localStorage.setItem('currentUser', JSON.stringify(data.user));
+                        updateUIAfterLogin(data.user);
+                        registerModal.style.display = 'none';
+                        registerForm.reset();
+                    } else {
+                        alert(data.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                }
+            });
+
+            function checkLoggedInStatus() {
+                const currentUser = localStorage.getItem('currentUser');
+                
+                if (currentUser) {
+                    const user = JSON.parse(currentUser);
+                    updateUIAfterLogin(user);
+                } else {
+                    guestView.classList.remove('hidden');
+                    userView.classList.add('hidden');
+                    commentFormContainer.classList.add('hidden');
+                }
+            }
+
+            function updateUIAfterLogin(user) {
+                guestView.classList.add('hidden');
+                userView.classList.remove('hidden');
+                commentFormContainer.classList.remove('hidden');
+                
+                navUsername.textContent = user.username;
+                navProfilePic.src = user.profilePic || '/api/placeholder/35/35';
+                
+                checkLikeStatus(storyId, user.id);
+            }
+
+            async function loadStory(id) {
+                try {
+                    const response = await fetch(`/api/stories/${id}`);
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        const story = data.story;
+                        
+                        document.getElementById('storyTitle').textContent = story.title;
+                        document.getElementById('authorName').textContent = story.author.username;
+                        document.getElementById('authorImg').src = story.author.profilePic || '/api/placeholder/40/40';
+                        document.getElementById('storyDate').textContent = new Date(story.createdAt).toLocaleDateString('en-US', { 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric' 
+                        });
+                        document.getElementById('storyCover').src = story.coverImage || '/api/placeholder/800/400';
+                        
+                        const contentDiv = document.getElementById('storyContent');
+                        const paragraphs = story.content.split('\n\n');
+                        
+                        contentDiv.innerHTML = '';
+                        paragraphs.forEach(paragraph => {
+                            if (paragraph.trim() !== '') {
+                                const p = document.createElement('p');
+                                p.textContent = paragraph;
+                                contentDiv.appendChild(p);
+                            }
+                        });
+                        
+                        document.title = `StoryShare - ${story.title}`;
+                        
+                        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                        if (currentUser) {
+                            checkLikeStatus(id, currentUser.id);
+                        }
+                        
+                        document.getElementById('authorInfo').addEventListener('click', () => {
+                            window.location.href = `index.html?author=${story.author.id}`;
+                        });
+                    } else {
+                        console.error(data.message);
+                        window.location.href = 'index.html';
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    window.location.href = 'index.html';
+                }
+            }
+
+            async function loadComments(storyId) {
+                try {
+                    const response = await fetch(`/api/comments/${storyId}`);
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        renderComments(data.comments);
+                    } else {
+                        console.error(data.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+
+            async function checkLikeStatus(storyId, userId) {
+                try {
+                    const response = await fetch(`/api/stories/${storyId}/like/${userId}`);
+                    const data = await response.json();
+                    
+                    if (response.ok && data.liked) {
+                        likeBtn.classList.add('active');
+                        likeBtn.textContent = '❤ Liked';
+                    } else {
+                        likeBtn.classList.remove('active');
+                        likeBtn.textContent = '❤ Like';
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+
+            function renderComments(comments) {
+                commentsList.innerHTML = '';
+                
+                if (comments.length === 0) {
+                    commentsList.innerHTML = '<p style="text-align: center; color: #777;">No comments yet. Be the first to comment!</p>';
+                    return;
+                }
+                
+                comments.forEach(comment => {
+                    const commentElement = document.createElement('div');
+                    commentElement.className = 'comment';
+                    commentElement.innerHTML = `
+                        <div class="comment-header">
+                            <img src="${comment.user.profilePic || '/api/placeholder/30/30'}" alt="${comment.user.username}" class="comment-user-img">
+                            <span class="comment-user-name">${comment.user.username}</span>
+                            <span class="comment-date">${new Date(comment.createdAt).toLocaleDateString('en-US', { 
+                                year: 'numeric', 
+                                month: 'short', 
+                                day: 'numeric' 
+                            })}</span>
+                        </div>
+                        <div class="comment-text">${comment.content}</div>
+                    `;
+                    
+                    commentsList.appendChild(commentElement);
+                });
+            }
+
+            window.addEventListener('click', (e) => {
+                if (e.target === loginModal) {
+                    loginModal.style.display = 'none';
+                }
+                if (e.target === registerModal) {
+                    registerModal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
