@@ -5,7 +5,9 @@
       "username": "admin",
       "password": "123456",
       "bio": "I love writing stories.",
-      "profilePic": "https://files.catbox.moe/csd8is.jpg"
+      "profilePic": "/api/placeholder/100/100",
+      "followers": 0,
+      "following": 0
     }
   ],
   "stories": [],
