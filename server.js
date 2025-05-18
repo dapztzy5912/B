@@ -206,6 +206,55 @@ app.get('/api/stories/user/:id', (req, res) => {
     res.json({ stories });
 });
 
+app.post('/api/users/update', (req, res) => {
+    const { id, username, bio, profilePic } = req.body;
+    const db = readDB();
+    const userIndex = db.users.findIndex(u => u.id === id);
+
+    if (userIndex === -1) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
+    const existingUser = db.users.find(u => u.username === username && u.id !== id);
+    if (existingUser) {
+        return res.status(400).json({ message: "Username already taken" });
+    }
+
+    db.users[userIndex].username = username;
+    db.users[userIndex].bio = bio;
+    db.users[userIndex].profilePic = profilePic;
+
+    writeDB(db);
+    res.json({ user: db.users[userIndex] });
+});
+
+app.post('/api/users/follow', (req, res) => {
+    const { followerId, followingId } = req.body;
+    const db = readDB();
+
+    if (followerId === followingId) {
+        return res.status(400).json({ message: "You can't follow yourself." });
+    }
+
+    const followIndex = db.follows.findIndex(f =>
+        f.followerId === followerId && f.followingId === followingId
+    );
+
+    if (followIndex > -1) {
+        db.follows.splice(followIndex, 1);
+    } else {
+        db.follows.push({ followerId, followingId });
+    }
+
+    db.users.forEach(user => {
+        user.followers = db.follows.filter(f => user.id === user.id).length;
+        user.following = db.follows.filter(f => f.followerId === user.id).length;
+    });
+
+    writeDB(db);
+    res.json({ success: true });
+});
+
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });
