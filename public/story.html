@@ -413,418 +413,381 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const guestView = document.querySelector('.guest-view');
-            const userView = document.querySelector('.user-view');
-            const loginBtn = document.getElementById('loginBtn');
-            const registerBtn = document.getElementById('registerBtn');
-            const loginModal = document.getElementById('loginModal');
-            const registerModal = document.getElementById('registerModal');
-            const closeLoginBtn = document.getElementById('closeLoginBtn');
-            const closeRegisterBtn = document.getElementById('closeRegisterBtn');
-            const switchToRegister = document.getElementById('switchToRegister');
-            const switchToLogin = document.getElementById('switchToLogin');
-            const loginForm = document.getElementById('loginForm');
-            const registerForm = document.getElementById('registerForm');
-            const profileLink = document.getElementById('profileLink');
-            const navUsername = document.getElementById('navUsername');
-            const navProfilePic = document.getElementById('navProfilePic');
-            const commentFormContainer = document.getElementById('commentFormContainer');
-            const commentInput = document.getElementById('commentInput');
-            const submitCommentBtn = document.getElementById('submitCommentBtn');
-            const commentsList = document.getElementById('commentsList');
-            const likeBtn = document.getElementById('likeBtn');
-            const shareBtn = document.getElementById('shareBtn');
-            const browseLinkNav = document.getElementById('browseLinkNav');
+    document.addEventListener('DOMContentLoaded', function () {
+        const guestView = document.querySelector('.guest-view');
+        const userView = document.querySelector('.user-view');
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const loginModal = document.getElementById('loginModal');
+        const registerModal = document.getElementById('registerModal');
+        const closeLoginBtn = document.getElementById('closeLoginBtn');
+        const closeRegisterBtn = document.getElementById('closeRegisterBtn');
+        const switchToRegister = document.getElementById('switchToRegister');
+        const switchToLogin = document.getElementById('switchToLogin');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const profileLink = document.getElementById('profileLink');
+        const navUsername = document.getElementById('navUsername');
+        const navProfilePic = document.getElementById('navProfilePic');
+        const commentFormContainer = document.getElementById('commentFormContainer');
+        const commentInput = document.getElementById('commentInput');
+        const submitCommentBtn = document.getElementById('submitCommentBtn');
+        const commentsList = document.getElementById('commentsList');
+        const likeBtn = document.getElementById('likeBtn');
+        const shareBtn = document.getElementById('shareBtn');
+        const followBtn = document.getElementById('followBtn'); // Tombol Follow
+        const browseLinkNav = document.getElementById('browseLinkNav');
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const storyId = urlParams.get('id');
-            
-            if (!storyId) {
-                window.location.href = 'index.html';
+        const urlParams = new URLSearchParams(window.location.search);
+        const storyId = urlParams.get('id');
+
+        if (!storyId) {
+            window.location.href = 'index.html';
+            return;
+        }
+
+        checkLoggedInStatus();
+        loadStory(storyId);
+        loadComments(storyId);
+
+        // Event Listeners
+        loginBtn.addEventListener('click', () => {
+            loginModal.style.display = 'flex';
+        });
+
+        registerBtn.addEventListener('click', () => {
+            registerModal.style.display = 'flex';
+        });
+
+        closeLoginBtn.addEventListener('click', () => {
+            loginModal.style.display = 'none';
+        });
+
+        closeRegisterBtn.addEventListener('click', () => {
+            registerModal.style.display = 'none';
+        });
+
+        switchToRegister.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginModal.style.display = 'none';
+            registerModal.style.display = 'flex';
+        });
+
+        switchToLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            registerModal.style.display = 'none';
+            loginModal.style.display = 'flex';
+        });
+
+        profileLink.addEventListener('click', () => {
+            window.location.href = 'index.html#profile';
+        });
+
+        browseLinkNav.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = 'index.html';
+        });
+
+        submitCommentBtn.addEventListener('click', async () => {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) {
+                loginModal.style.display = 'flex';
                 return;
             }
+            const commentText = commentInput.value.trim();
+            if (!commentText) return;
 
-            checkLoggedInStatus();
-            
-            loadStory(storyId);
-
-            loadComments(storyId);
-
-            loginBtn.addEventListener('click', () => {
-                loginModal.style.display = 'flex';
-            });
-
-            registerBtn.addEventListener('click', () => {
-                registerModal.style.display = 'flex';
-            });
-
-            closeLoginBtn.addEventListener('click', () => {
-                loginModal.style.display = 'none';
-            });
-
-            closeRegisterBtn.addEventListener('click', () => {
-                registerModal.style.display = 'none';
-            });
-
-            switchToRegister.addEventListener('click', (e) => {
-                e.preventDefault();
-                loginModal.style.display = 'none';
-                registerModal.style.display = 'flex';
-            });
-
-            switchToLogin.addEventListener('click', (e) => {
-                e.preventDefault();
-                registerModal.style.display = 'none';
-                loginModal.style.display = 'flex';
-            });
-
-            profileLink.addEventListener('click', () => {
-                window.location.href = 'index.html#profile';
-            });
-
-            browseLinkNav.addEventListener('click', (e) => {
-                e.preventDefault();
-                window.location.href = 'index.html';
-            });
-
-            submitCommentBtn.addEventListener('click', async () => {
-                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-                
-                if (!currentUser) {
-                    loginModal.style.display = 'flex';
-                    return;
-                }
-                
-                const commentText = commentInput.value.trim();
-                
-                if (!commentText) {
-                    return;
-                }
-                
-                try {
-                    const response = await fetch('/api/comments', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            storyId,
-                            userId: currentUser.id,
-                            content: commentText
-                        })
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (response.ok) {
-                        commentInput.value = '';
-                        loadComments(storyId);
-                    } else {
-                        alert(data.message);
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('An error occurred. Please try again.');
-                }
-            });
-
-            likeBtn.addEventListener('click', async () => {
-                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-                
-                if (!currentUser) {
-                    loginModal.style.display = 'flex';
-                    return;
-                }
-                
-                try {
-                    const response = await fetch(`/api/stories/${storyId}/like`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            userId: currentUser.id
-                        })
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (response.ok) {
-                        likeBtn.classList.toggle('active');
-                        likeBtn.textContent = likeBtn.classList.contains('active') ? '❤ Liked' : '❤ Like';
-                    } else {
-                        alert(data.message);
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('An error occurred. Please try again.');
-                }
-            });
-
-            shareBtn.addEventListener('click', () => {
-                const url = window.location.href;
-                
-                if (navigator.share) {
-                    navigator.share({
-                        title: document.getElementById('storyTitle').textContent,
-                        url: url
+            try {
+                const response = await fetch('/api/comments', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        storyId,
+                        userId: currentUser.id,
+                        content: commentText
                     })
-                    .catch(error => console.error('Error sharing:', error));
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    commentInput.value = '';
+                    loadComments(storyId);
                 } else {
-                    navigator.clipboard.writeText(url)
-                        .then(() => alert('Link copied to clipboard!'))
-                        .catch(error => console.error('Error copying to clipboard:', error));
+                    alert(data.message);
                 }
-            });
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Gagal mengirim komentar.');
+            }
+        });
 
-            loginForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                const username = document.getElementById('loginUsername').value;
-                const password = document.getElementById('loginPassword').value;
-                
+        likeBtn.addEventListener('click', async () => {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) {
+                loginModal.style.display = 'flex';
+                return;
+            }
+            try {
+                const response = await fetch(`/api/stories/${storyId}/like`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUser.id })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    likeBtn.classList.toggle('active');
+                    likeBtn.textContent = likeBtn.classList.contains('active') ? '❤ Liked' : '❤ Like';
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Gagal memberikan like.');
+            }
+        });
+
+        if (followBtn) {
+            followBtn.addEventListener('click', async () => {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                if (!currentUser) {
+                    loginModal.style.display = 'flex';
+                    return;
+                }
+
+                const authorElement = document.getElementById('authorInfo');
+                const authorId = parseInt(authorElement.dataset.authorid); // Pastikan sesuai
+                const followerId = currentUser.id;
+
                 try {
-                    const response = await fetch('/api/login', {
+                    const response = await fetch('/api/users/follow', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ username, password })
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ followerId, followingId: authorId })
                     });
-                    
-                    const data = await response.json();
-                    
+
                     if (response.ok) {
-                        localStorage.setItem('currentUser', JSON.stringify(data.user));
-                        updateUIAfterLogin(data.user);
-                        loginModal.style.display = 'none';
-                        loginForm.reset();
-                    } else {
-                        alert(data.message);
+                        followBtn.textContent = followBtn.textContent === "Follow" ? "Unfollow" : "Follow";
                     }
                 } catch (error) {
                     console.error('Error:', error);
-                    alert('An error occurred. Please try again.');
                 }
             });
+        }
 
-            registerForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                const username = document.getElementById('registerUsername').value;
-                const password = document.getElementById('registerPassword').value;
-                const bio = document.getElementById('registerBio').value;
-                
-                try {
-                    const response = await fetch('/api/register', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ username, password, bio })
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (response.ok) {
-                        localStorage.setItem('currentUser', JSON.stringify(data.user));
-                        updateUIAfterLogin(data.user);
-                        registerModal.style.display = 'none';
-                        registerForm.reset();
-                    } else {
-                        alert(data.message);
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('An error occurred. Please try again.');
-                }
-            });
-
-            function checkLoggedInStatus() {
-                const currentUser = localStorage.getItem('currentUser');
-                
-                if (currentUser) {
-                    const user = JSON.parse(currentUser);
-                    updateUIAfterLogin(user);
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    localStorage.setItem('currentUser', JSON.stringify(data.user));
+                    updateUIAfterLogin(data.user);
+                    loginModal.style.display = 'none';
+                    loginForm.reset();
                 } else {
-                    guestView.classList.remove('hidden');
-                    userView.classList.add('hidden');
-                    commentFormContainer.classList.add('hidden');
+                    alert(data.message);
                 }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan. Silakan coba lagi.');
             }
+        });
 
-            function updateUIAfterLogin(user) {
-                guestView.classList.add('hidden');
-                userView.classList.remove('hidden');
-                commentFormContainer.classList.remove('hidden');
-                
-                navUsername.textContent = user.username;
-                navProfilePic.src = user.profilePic || '/api/placeholder/35/35';
-                
-                checkLikeStatus(storyId, user.id);
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('registerUsername').value;
+            const password = document.getElementById('registerPassword').value;
+            const bio = document.getElementById('registerBio').value;
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, bio })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    localStorage.setItem('currentUser', JSON.stringify(data.user));
+                    updateUIAfterLogin(data.user);
+                    registerModal.style.display = 'none';
+                    registerForm.reset();
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan. Silakan coba lagi.');
             }
+        });
 
-            async function loadStory(id) {
-                try {
-                    const response = await fetch(`/api/stories/${id}`);
-                    const data = await response.json();
-                    
-                    if (response.ok) {
-                        const story = data.story;
-                        
-                        document.getElementById('storyTitle').textContent = story.title;
-                        document.getElementById('authorName').textContent = story.author.username;
-                        document.getElementById('authorImg').src = story.author.profilePic || '/api/placeholder/40/40';
-                        document.getElementById('storyDate').textContent = new Date(story.createdAt).toLocaleDateString('en-US', { 
-                            year: 'numeric', 
-                            month: 'long', 
-                            day: 'numeric' 
-                        });
-                        document.getElementById('storyCover').src = story.coverImage || '/api/placeholder/800/400';
-                        
-                        const contentDiv = document.getElementById('storyContent');
-                        const paragraphs = story.content.split('\n\n');
-                        
-                        contentDiv.innerHTML = '';
-                        paragraphs.forEach(paragraph => {
-                            if (paragraph.trim() !== '') {
-                                const p = document.createElement('p');
-                                p.textContent = paragraph;
-                                contentDiv.appendChild(p);
-                            }
-                        });
-                        
-                        document.title = `StoryShare - ${story.title}`;
-                        
-                        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-                        if (currentUser) {
-                            checkLikeStatus(id, currentUser.id);
+        function checkLoggedInStatus() {
+            const currentUser = localStorage.getItem('currentUser');
+            if (currentUser) {
+                const user = JSON.parse(currentUser);
+                updateUIAfterLogin(user);
+            } else {
+                guestView.classList.remove('hidden');
+                userView.classList.add('hidden');
+                commentFormContainer.classList.add('hidden');
+            }
+        }
+
+        function updateUIAfterLogin(user) {
+            guestView.classList.add('hidden');
+            userView.classList.remove('hidden');
+            commentFormContainer.classList.remove('hidden');
+            navUsername.textContent = user.username;
+            navProfilePic.src = user.profilePic || '/api/placeholder/35/35';
+
+            checkLikeStatus(storyId, user.id);
+            const authorElement = document.getElementById('authorInfo');
+            const authorId = parseInt(authorElement.dataset.authorid);
+            if (authorId && user.id) {
+                checkFollowStatus(authorId, user.id);
+            }
+        }
+
+        async function loadStory(id) {
+            try {
+                const response = await fetch(`/api/stories/${id}`);
+                const data = await response.json();
+                if (response.ok) {
+                    const story = data.story;
+                    document.getElementById('storyTitle').textContent = story.title;
+                    document.getElementById('authorName').textContent = story.author.username;
+                    document.getElementById('authorImg').src = story.author.profilePic || '/api/placeholder/40/40';
+                    document.getElementById('storyDate').textContent = new Date(story.createdAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    document.getElementById('storyCover').src = story.coverImage || '/api/placeholder/800/400';
+                    const contentDiv = document.getElementById('storyContent');
+                    const paragraphs = story.content.split('\n');
+                    contentDiv.innerHTML = '';
+                    paragraphs.forEach(paragraph => {
+                        if (paragraph.trim() !== '') {
+                            const p = document.createElement('p');
+                            p.textContent = paragraph;
+                            contentDiv.appendChild(p);
                         }
-                        
-                        document.getElementById('authorInfo').addEventListener('click', () => {
-                            window.location.href = `index.html?author=${story.author.id}`;
-                        });
-                    } else {
-                        console.error(data.message);
-                        window.location.href = 'index.html';
+                    });
+                    document.title = `StoryShare - ${story.title}`;
+                    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                    if (currentUser) {
+                        checkLikeStatus(id, currentUser.id);
                     }
-                } catch (error) {
-                    console.error('Error:', error);
+                    const authorInfo = document.getElementById('authorInfo');
+                    authorInfo.dataset.authorid = story.author.id; // Set dataset untuk follow
+                    authorInfo.addEventListener('click', () => {
+                        window.location.href = `index.html?author=${story.author.id}`;
+                    });
+                } else {
+                    console.error(data.message);
                     window.location.href = 'index.html';
                 }
+            } catch (error) {
+                console.error('Error:', error);
+                window.location.href = 'index.html';
             }
+        }
 
-            async function loadComments(storyId) {
-                try {
-                    const response = await fetch(`/api/comments/${storyId}`);
-                    const data = await response.json();
-                    
-                    if (response.ok) {
-                        renderComments(data.comments);
-                    } else {
-                        console.error(data.message);
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
+        async function loadComments(storyId) {
+            try {
+                const response = await fetch(`/api/comments/${storyId}`);
+                const data = await response.json();
+                if (response.ok) {
+                    renderComments(data.comments);
+                } else {
+                    console.error(data.message);
                 }
+            } catch (error) {
+                console.error('Error:', error);
             }
+        }
 
-            async function checkLikeStatus(storyId, userId) {
-                try {
-                    const response = await fetch(`/api/stories/${storyId}/like/${userId}`);
-                    const data = await response.json();
-                    
-                    if (response.ok && data.liked) {
-                        likeBtn.classList.add('active');
-                        likeBtn.textContent = '❤ Liked';
-                    } else {
-                        likeBtn.classList.remove('active');
-                        likeBtn.textContent = '❤ Like';
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
+        async function checkLikeStatus(storyId, userId) {
+            try {
+                const response = await fetch(`/api/stories/${storyId}/like/${userId}`);
+                const data = await response.json();
+                if (response.ok && data.liked) {
+                    likeBtn.classList.add('active');
+                    likeBtn.textContent = '❤ Liked';
+                } else {
+                    likeBtn.classList.remove('active');
+                    likeBtn.textContent = '❤ Like';
                 }
+            } catch (error) {
+                console.error('Error:', error);
             }
+        }
 
-            function renderComments(comments) {
-                commentsList.innerHTML = '';
-                
-                if (comments.length === 0) {
-                    commentsList.innerHTML = '<p style="text-align: center; color: #777;">No comments yet. Be the first to comment!</p>';
-                    return;
+        async function checkFollowStatus(authorId, userId) {
+            try {
+                const response = await fetch(`/api/users/check-follow/${userId}/${authorId}`);
+                const data = await response.json();
+                if (data.following) {
+                    followBtn.textContent = "Unfollow";
+                } else {
+                    followBtn.textContent = "Follow";
                 }
-                
-                comments.forEach(comment => {
-                    const commentElement = document.createElement('div');
-                    commentElement.className = 'comment';
-                    commentElement.innerHTML = `
-                        <div class="comment-header">
-                            <img src="${comment.user.profilePic || '/api/placeholder/30/30'}" alt="${comment.user.username}" class="comment-user-img">
-                            <span class="comment-user-name">${comment.user.username}</span>
-                            <span class="comment-date">${new Date(comment.createdAt).toLocaleDateString('en-US', { 
-                                year: 'numeric', 
-                                month: 'short', 
-                                day: 'numeric' 
-                            })}</span>
-                        </div>
-                        <div class="comment-text">${comment.content}</div>
-                    `;
-                    
-                    commentsList.appendChild(commentElement);
-                });
+            } catch (error) {
+                console.error('Error checking follow status:', error);
             }
+        }
 
-            window.addEventListener('click', (e) => {
-                if (e.target === loginModal) {
-                    loginModal.style.display = 'none';
-                }
-                if (e.target === registerModal) {
-                    registerModal.style.display = 'none';
-                }
+        function renderComments(comments) {
+            commentsList.innerHTML = '';
+            if (comments.length === 0) {
+                commentsList.innerHTML = '<p style="text-align: center; color: #777;">Belum ada komentar. Jadi yang pertama!</p>';
+                return;
+            }
+            comments.forEach(comment => {
+                const commentElement = document.createElement('div');
+                commentElement.className = 'comment';
+                commentElement.innerHTML = `
+                    <div class="comment-header">
+                        <img src="${comment.user.profilePic || '/api/placeholder/30/30'}" alt="${comment.user.username}" class="comment-user-img">
+                        <span class="comment-user-name">${comment.user.username}</span>
+                        <span class="comment-date">${new Date(comment.createdAt).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                        })}</span>
+                    </div>
+                    <div class="comment-text">${comment.content}</div>
+                `;
+                commentsList.appendChild(commentElement);
             });
-        });
-        
-        const followBtn = document.getElementById('followBtn');
-
-async function checkFollowStatus(authorId, userId) {
-    try {
-        const response = await fetch(`/api/users/follow/${followerId}/${followingId}`);
-        const data = await response.json();
-        if (data.followed) {
-            followBtn.textContent = "Unfollow";
-        } else {
-            followBtn.textContent = "Follow";
         }
-    } catch (error) {
-        console.error('Error checking follow status:', error);
-    }
-}
 
-followBtn.addEventListener('click', async () => {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    if (!currentUser) {
-        loginModal.style.display = 'flex';
-        return;
-    }
-
-    const authorId = document.getElementById('authorInfo').dataset.authorId;
-    const userId = currentUser.id;
-
-    try {
-        const response = await fetch('/api/users/follow', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ followerId: userId, followingId: authorId })
+        window.addEventListener('click', (e) => {
+            if (e.target === loginModal) {
+                loginModal.style.display = 'none';
+            }
+            if (e.target === registerModal) {
+                registerModal.style.display = 'none';
+            }
         });
 
-        if (response.ok) {
-            followBtn.textContent = followBtn.textContent === "Follow" ? "Unfollow" : "Follow";
-        }
-    } catch (error) {
-        console.error('Error:', error);
-    }
-});
-    </script>
+        shareBtn.addEventListener('click', () => {
+            const url = window.location.href;
+            if (navigator.share) {
+                navigator.share({
+                    title: document.getElementById('storyTitle').textContent,
+                    url: url
+                }).catch(error => console.error('Error sharing:', error));
+            } else {
+                navigator.clipboard.writeText(url)
+                    .then(() => alert('Link berhasil disalin ke clipboard!'))
+                    .catch(error => console.error('Error saat menyalin:', error));
+            }
+        });
+    });
+</script>
 </body>
 </html>
