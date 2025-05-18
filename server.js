@@ -11,16 +11,16 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Serve index.html and story.html
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
-
 
 app.get('/story', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'story.html'));
 });
 
-
+// Database
 const DB_PATH = path.join(__dirname, 'database.json');
 
 function readDB() {
@@ -32,6 +32,7 @@ function writeDB(data) {
     fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
 }
 
+// Login
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
     const db = readDB();
@@ -44,6 +45,7 @@ app.post('/api/login', (req, res) => {
     res.json({ user });
 });
 
+// Register
 app.post('/api/register', (req, res) => {
     const { username, password, bio } = req.body;
     const db = readDB();
@@ -68,6 +70,7 @@ app.post('/api/register', (req, res) => {
     res.json({ user: newUser });
 });
 
+// Stories
 app.get('/api/stories', (req, res) => {
     const type = req.query.type || 'recent';
     const db = readDB();
@@ -128,6 +131,7 @@ app.post('/api/stories', (req, res) => {
     res.json({ story: newStory });
 });
 
+// Likes
 app.post('/api/stories/:id/like', (req, res) => {
     const storyId = parseInt(req.params.id);
     const { userId } = req.body;
@@ -152,6 +156,7 @@ app.get('/api/stories/:id/like/:userId', (req, res) => {
     res.json({ liked });
 });
 
+// Comments
 app.get('/api/comments/:storyId', (req, res) => {
     const storyId = parseInt(req.params.storyId);
     const db = readDB();
@@ -179,21 +184,25 @@ app.post('/api/comments', (req, res) => {
     res.json({ comment: newComment });
 });
 
+// User Stats
 app.get('/api/users/:id/stats', (req, res) => {
     const userId = parseInt(req.params.id);
     const db = readDB();
     const stories = db.stories.filter(s => s.authorId === userId).length;
     const likes = db.likes.filter(l => l.userId === userId).length;
-    const followers = db.likes.filter(l => l.userId === userId).length; 
+    const followers = db.follows.filter(f => f.followingId === userId).length;
+    const following = db.follows.filter(f => f.followerId === userId).length;
+
     res.json({
         stats: {
             followers,
-            following: 0,
+            following,
             stories
         }
     });
 });
 
+// User Stories
 app.get('/api/stories/user/:id', (req, res) => {
     const userId = parseInt(req.params.id);
     const db = readDB();
@@ -206,6 +215,7 @@ app.get('/api/stories/user/:id', (req, res) => {
     res.json({ stories });
 });
 
+// Update Profile
 app.post('/api/users/update', (req, res) => {
     const { id, username, bio, profilePic } = req.body;
     const db = readDB();
@@ -228,6 +238,7 @@ app.post('/api/users/update', (req, res) => {
     res.json({ user: db.users[userIndex] });
 });
 
+// Follow User
 app.post('/api/users/follow', (req, res) => {
     const { followerId, followingId } = req.body;
     const db = readDB();
@@ -246,8 +257,9 @@ app.post('/api/users/follow', (req, res) => {
         db.follows.push({ followerId, followingId });
     }
 
+    // Update stats
     db.users.forEach(user => {
-        user.followers = db.follows.filter(f => user.id === user.id).length;
+        user.followers = db.follows.filter(f => f.followingId === user.id).length;
         user.following = db.follows.filter(f => f.followerId === user.id).length;
     });
 
@@ -255,6 +267,15 @@ app.post('/api/users/follow', (req, res) => {
     res.json({ success: true });
 });
 
+// Check Follow Status
+app.get('/api/users/check-follow/:userId/:followingId', (req, res) => {
+    const { userId, followingId } = req.params;
+    const db = readDB();
+    const follows = db.follows.some(f => f.followerId == userId && f.followingId == followingId);
+    res.json({ following: follows });
+});
+
+// Start Server
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });
