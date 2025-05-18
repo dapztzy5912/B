@@ -1,14 +1,17 @@
 {
-  "name": "storyshare-backend",
-  "version": "1.0.0",
-  "description": "Backend for StoryShare App",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "express": "^4.18.2",
-    "body-parser": "^1.20.2",
-    "cors": "^2.8.5"
-  }
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password": "123456",
+      "bio": "I love writing stories.",
+      "profilePic": "/api/placeholder/100/100",
+      "followers": 0,
+      "following": 0
+    }
+  ],
+  "stories": [],
+  "comments": [],
+  "likes": [],
+  "follows": []
 }
