@@ -1,4 +1,16 @@
 {
-  "users": [],
-  "stories": []
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password": "123456",
+      "bio": "I love writing stories.",
+      "profilePic": "/api/placeholder/100/100",
+      "followers": 0,
+      "following": 0
+    }
+  ],
+  "stories": [],
+  "comments": [],
+  "likes": []
 }
