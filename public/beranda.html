@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StoryShare - Beranda</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            color: #ff5e3a;
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        
+        .search-container {
+            flex: 0 0 40%;
+        }
+        
+        .search-bar {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 16px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-links a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #ff5e3a;
+        }
+        
+        .profile-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .main-content {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .story-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        
+        .story-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .story-image {
+            height: 180px;
+            width: 100%;
+            object-fit: cover;
+        }
+        
+        .story-content {
+            padding: 20px;
+        }
+        
+        .story-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .story-preview {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .story-author {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .author-pic {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .author-name {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .new-story-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #ff5e3a;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            box-shadow: 0 4px 10px rgba(255, 94, 58, 0.4);
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+        
+        .new-story-btn:hover {
+            transform: scale(1.1);
+            background-color: #e54e2a;
+        }
+        
+        .no-stories {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .no-stories h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .no-stories p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .no-stories a {
+            display: inline-block;
+            background-color: #ff5e3a;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        
+        .no-stories a:hover {
+            background-color: #e54e2a;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="beranda.html" class="logo">StoryShare</a>
+        <div class="search-container">
+            <input type="text" id="searchBar" class="search-bar" placeholder="Search stories...">
+        </div>
+        <div class="nav-links">
+            <a href="beranda.html">Home</a>
+            <a href="profile.html" class="profile-link">
+                <span id="username">Username</span>
+                <img id="profilePic" src="/api/placeholder/40/40" alt="Profile" class="profile-pic">
+            </a>
+        </div>
+    </div>
+
+    <div class="main-content" id="storiesContainer">
+        <!-- Stories will be dynamically loaded here -->
+        <div class="no-stories">
+            <h2>No stories found</h2>
+            <p>Be the first to share your story with the community!</p>
+            <a href="upload.html">Create Story</a>
+        </div>
+    </div>
+
+    <a href="upload.html" class="new-story-btn">+</a>
+
+    <script>
+        // Check if user is logged in
+        window.addEventListener('DOMContentLoaded', function() {
+            const currentUser = localStorage.getItem('currentUser');
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Update user info in navbar
+            const user = JSON.parse(currentUser);
+            document.getElementById('username').textContent = user.username;
+            document.getElementById('profilePic').src = user.profilePic;
+            
+            // Load stories
+            loadStories();
+        });
+
+        // Search functionality
+        document.getElementById('searchBar').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            loadStories(searchTerm);
+        });
+
+        // Load stories from API
+        async function loadStories(searchTerm = '') {
+            try {
+                const response = await fetch('/api/stories');
+                const stories = await response.json();
+                
+                const storiesContainer = document.getElementById('storiesContainer');
+                
+                // Filter stories based on search term if provided
+                const filteredStories = searchTerm 
+                    ? stories.filter(story => 
+                        story.title.toLowerCase().includes(searchTerm) || 
+                        story.content.toLowerCase().includes(searchTerm))
+                    : stories;
+                
+                // Clear container
+                storiesContainer.innerHTML = '';
+                
+                if (filteredStories.length === 0) {
+                    storiesContainer.innerHTML = `
+                        <div class="no-stories">
+                            <h2>No stories found</h2>
+                            <p>${searchTerm ? 'Try a different search term.' : 'Be the first to share your story with the community!'}</p>
+                            <a href="upload.html">Create Story</a>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Render stories
+                filteredStories.forEach(story => {
+                    const storyCard = document.createElement('div');
+                    storyCard.className = 'story-card';
+                    storyCard.onclick = () => window.location.href = `story.html?id=${story.id}`;
+                    
+                    const preview = story.content.substring(0, 100) + (story.content.length > 100 ? '...' : '');
+                    
+                    storyCard.innerHTML = `
+                        ${story.image ? `<img src="${story.image}" alt="${story.title}" class="story-image">` : ''}
+                        <div class="story-content">
+                            <div class="story-title">${story.title}</div>
+                            <div class="story-preview">${preview}</div>
+                            <div class="story-author">
+                                <img src="${story.authorPic}" alt="${story.authorName}" class="author-pic">
+                                <div class="author-name">by ${story.authorName}</div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    storiesContainer.appendChild(storyCard);
+                });
+                
+            } catch (error) {
+                console.error('Error loading stories:', error);
+            }
+        }
+    </script>
+</body>
+</html>

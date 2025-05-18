@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Story | StoryShare</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        header {
+            background-color: #ff6b6b;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .logo a {
+            color: white;
+            text-decoration: none;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        nav {
+            display: flex;
+            gap: 20px;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        
+        .upload-form {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        textarea {
+            height: 300px;
+            resize: vertical;
+        }
+        
+        .preview-image {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 10px;
+            display: none;
+            border-radius: 5px;
+        }
+        
+        .btn {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #ff5252;
+        }
+        
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            color: #777;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a href="beranda.html">StoryShare</a>
+        </div>
+        <nav>
+            <a href="beranda.html"><i class="fas fa-home"></i> Beranda</a>
+            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+            <a href="upload.html" class="active"><i class="fas fa-upload"></i> Upload</a>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <div class="upload-form">
+            <h2>Upload Story Baru</h2>
+            <p>Bagikan cerita menarikmu dengan semua orang!</p>
+            
+            <div class="form-group">
+                <label for="judul">Judul Cerita</label>
+                <input type="text" id="judul" name="judul" placeholder="Masukkan judul cerita...">
+            </div>
+            
+            <div class="form-group">
+                <label for="cover">Cover Image (Opsional)</label>
+                <input type="file" id="cover" name="cover" accept="image/*">
+                <img id="preview" class="preview-image" src="/api/placeholder/200/200" alt="Preview">
+            </div>
+            
+            <div class="form-group">
+                <label for="cerita">Isi Cerita</label>
+                <textarea id="cerita" name="cerita" placeholder="Mulai menulis ceritamu di sini..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="genre">Genre</label>
+                <select id="genre" name="genre">
+                    <option value="">Pilih Genre</option>
+                    <option value="romance">Romance</option>
+                    <option value="horror">Horror</option>
+                    <option value="comedy">Comedy</option>
+                    <option value="fantasy">Fantasy</option>
+                    <option value="scifi">Sci-Fi</option>
+                    <option value="mystery">Mystery</option>
+                    <option value="adventure">Adventure</option>
+                </select>
+            </div>
+            
+            <button type="button" class="btn" id="publishBtn">Publikasikan</button>
+        </div>
+    </div>
+    
+    <div class="footer">
+        &copy; 2025 StoryShare. All rights reserved.
+    </div>
+    
+    <script>
+        // Untuk menampilkan preview gambar yang diupload
+        document.getElementById('cover').addEventListener('change', function(event) {
+            const preview = document.getElementById('preview');
+            const file = event.target.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Untuk menghandle publikasi cerita
+        document.getElementById('publishBtn').addEventListener('click', function() {
+            const judul = document.getElementById('judul').value;
+            const cerita = document.getElementById('cerita').value;
+            const genre = document.getElementById('genre').value;
+            const coverInput = document.getElementById('cover');
+            let coverUrl = '';
+            
+            if (!judul || !cerita) {
+                alert('Judul dan isi cerita harus diisi!');
+                return;
+            }
+            
+            // Cek jika user sudah login
+            const currentUser = localStorage.getItem('currentUser');
+            if (!currentUser) {
+                alert('Silakan login terlebih dahulu!');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const user = JSON.parse(currentUser);
+            
+            // Simulasi upload dengan fetch API ke backend
+            fetch('/api/stories', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title: judul,
+                    content: cerita,
+                    genre: genre,
+                    coverImage: coverUrl,
+                    author: user.username,
+                    authorId: user.id,
+                    createdAt: new Date().toISOString()
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Cerita berhasil dipublikasikan!');
+                    window.location.href = 'beranda.html';
+                } else {
+                    throw new Error('Gagal mempublikasikan cerita');
+                }
+            })
+            .catch(error => {
+                alert('Error: ' + error.message);
+            });
+        });
+    </script>
+</body>
+</html>

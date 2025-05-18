@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Story Detail | StoryShare</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        header {
+            background-color: #ff6b6b;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .logo a {
+            color: white;
+            text-decoration: none;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        nav {
+            display: flex;
+            gap: 20px;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        
+        .story-container {
+            padding: 20px;
+        }
+        
+        .story-header {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+        
+        .story-title {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .story-meta {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #777;
+        }
+        
+        .author-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .author-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+        
+        .author-name {
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+        
+        .story-date {
+            margin-left: 15px;
+        }
+        
+        .story-genre {
+            background-color: #ff6b6b;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 12px;
+            margin-left: 15px;
+        }
+        
+        .story-cover {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .story-content {
+            line-height: 1.8;
+            font-size: 18px;
+            text-align: justify;
+            white-space: pre-line;
+        }
+        
+        .story-actions {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .like-button, .comment-button, .share-button {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #555;
+        }
+        
+        .like-button.active {
+            color: #ff6b6b;
+        }
+        
+        .comments-section {
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        
+        .comments-header {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .comment-form {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .comment-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .comment-submit {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-radius: 5px;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .comment-submit:hover {
+            background-color: #ff5252;
+        }
+        
+        .comment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .comment {
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .comment-author {
+            font-weight: bold;
+        }
+        
+        .comment-date {
+            color: #777;
+            font-size: 14px;
+        }
+        
+        .comment-content {
+            font-size: 16px;
+        }
+        
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            color: #777;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 10px;
+            }
+            
+            .story-title {
+                font-size: 24px;
+            }
+            
+            .story-content {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a href="beranda.html">StoryShare</a>
+        </div>
+        <nav>
+            <a href="beranda.html"><i class="fas fa-home"></i> Beranda</a>
+            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+            <a href="upload.html"><i class="fas fa-upload"></i> Upload</a>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <div class="story-container">
+            <div class="story-header">
+                <h1 class="story-title" id="story-title">Judul Cerita</h1>
+                <div class="story-meta">
+                    <div class="author-info">
+                        <img src="/api/placeholder/40/40" alt="Author" class="author-avatar" id="author-avatar">
+                        <a href="#" class="author-name" id="author-name">Nama Penulis</a>
+                    </div>
+                    <div class="story-date" id="story-date">18 Mei 2025</div>
+                    <div class="story-genre" id="story-genre">Romance</div>
+                </div>
+                <img src="/api/placeholder/800/400" alt="Story Cover" class="story-cover" id="story-cover">
+            </div>
+            
+            <div class="story-content" id="story-content">
+                <!-- Isi cerita akan dimuat di sini -->
+                Ini adalah isi cerita yang akan dimuat secara dinamis dari database. Cerita ini akan berisi paragraf-paragraf yang menjelaskan alur, karakter, dan kejadian-kejadian menarik yang membuat pembaca tertarik untuk terus membaca.
+            </div>
+            
+            <div class="story-actions">
+                <button class="like-button" id="like-button">
+                    <i class="far fa-heart"></i> <span id="like-count">0</span> Suka
+                </button>
+                <button class="comment-button">
+                    <i class="far fa-comment"></i> Komentar
+                </button>
+                <button class="share-button">
+                    <i class="far fa-share-square"></i> Bagikan
+                </button>
+            </div>
+            
+            <div class="comments-section">
+                <h3 class="comments-header">Komentar (<span id="comment-count">0</span>)</h3>
+                
+                <div class="comment-form">
+                    <input type="text" class="comment-input" placeholder="Tambahkan komentar...">
+                    <button class="comment-submit">Kirim</button>
+                </div>
+                
+                <div class="comment-list" id="comment-list">
+                    <!-- Komentar akan dimuat di sini -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        &copy; 2025 StoryShare. All rights reserved.
+    </div>
+    
+    <script>
+        // Mengambil ID cerita dari URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const storyId = urlParams.get('id');
+        
+        // Cek apakah pengguna sudah login
+        const currentUser = localStorage.getItem('currentUser');
+        let user = null;
+        
+        if (currentUser) {
+            user = JSON.parse(currentUser);
+        }
+        
+        // Fungsi untuk memuat data cerita
+        function loadStoryData() {
+            if (!storyId) {
+                alert('ID cerita tidak ditemukan!');
+                window.location.href = 'beranda.html';
+                return;
+            }
+            
+            // Simulasi request ke API
+            fetch(`/api/stories/${storyId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Cerita tidak ditemukan');
+                    }
+                    return response.json();
+                })
+                .then(story => {
+                    // Mengisi data cerita ke dalam halaman
+                    document.getElementById('story-title').textContent = story.title;
+                    document.getElementById('author-name').textContent = story.author;
+                    document.getElementById('story-date').textContent = new Date(story.createdAt).toLocaleDateString('id-ID', { 
+                        day: 'numeric', 
+                        month: 'long', 
+                        year: 'numeric' 
+                    });
+                    document.getElementById('story-genre').textContent = story.genre;
+                    
+                    // Set avatar dari user
+                    if (story.authorAvatar) {
+                        document.getElementById('author-avatar').src = story.authorAvatar;
+                    }
+                    
+                    // Set cover cerita jika ada
+                    if (story.coverImage) {
+                        document.getElementById('story-cover').src = story.coverImage;
+                    } else {
+                        document.getElementById('story-cover').style.display = 'none';
+                    }
+                    
+                    // Set isi cerita
+                    document.getElementById('story-content').textContent = story.content;
+                    
+                    // Set link ke profile penulis
+                    document.getElementById('author-name').href = `profile.html?id=${story.authorId}`;
+                    
+                    // Set jumlah like
+                    document.getElementById('like-count').textContent = story.likes || 0;
+                    
+                    // Cek apakah user sudah like cerita ini
+                    if (user && story.likedBy && story.likedBy.includes(user.id)) {
+                        document.getElementById('like-button').classList.add('active');
+                        document.getElementById('like-button').querySelector('i').className = 'fas fa-heart';
+                    }
+                    
+                    // Load komentar
+                    loadComments(storyId);
+                })
+                .catch(error => {
+                    alert('Error: ' + error.message);
+                    window.location.href = 'beranda.html';
+                });
+        }
+        
+        // Fungsi untuk memuat komentar
+        function loadComments(storyId) {
+            fetch(`/api/stories/${storyId}/comments`)
+                .then(response => response.json())
+                .then(comments => {
+                    const commentList = document.getElementById('comment-list');
+                    commentList.innerHTML = '';
+                    
+                    if (comments.length === 0) {
+                        commentList.innerHTML = '<p>Belum ada komentar. Jadilah yang pertama!</p>';
+                    } else {
+                        comments.forEach(comment => {
+                            const commentEl = document.createElement('div');
+                            commentEl.className = 'comment';
+                            commentEl.innerHTML = `
+                                <div class="comment-header">
+                                    <span class="comment-author">${comment.author}</span>
+                                    <span class="comment-date">${new Date(comment.createdAt).toLocaleDateString('id-ID')}</span>
+                                </div>
+                                <div class="comment-content">${comment.content}</div>
+                            `;
+                            commentList.appendChild(commentEl);
+                        });
+                    }
+                    
+                    document.getElementById('comment-count').textContent = comments.length;
+                })
+                .catch(error => {
+                    console.error('Error loading comments:', error);
+                });
+        }
+        
+        // Event listener untuk tombol like
+        document.getElementById('like-button').addEventListener('click', function() {
+            if (!user) {
+                alert('Silakan login terlebih dahulu untuk menyukai cerita ini!');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const likeButton = this;
+            const isLiked = likeButton.classList.contains('active');
+            
+            // Simulasi request ke API
+            fetch(`/api/stories/${storyId}/like`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: user.id,
+                    action: isLiked ? 'unlike' : 'like'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const likeCount = document.getElementById('like-count');
+                
+                if (isLiked) {
+                    // User unlike story
+                    likeButton.classList.remove('active');
+                    likeButton.querySelector('i').className = 'far fa-heart';
+                    likeCount.textContent = parseInt(likeCount.textContent) - 1;
+                } else {
+                    // User like story
+                    likeButton.classList.add('active');
+                    likeButton.querySelector('i').className = 'fas fa-heart';
+                    likeCount.textContent = parseInt(likeCount.textContent) + 1;
+                }
+            })
+            .catch(error => {
+                console.error('Error liking/unliking story:', error);
+            });
+        });
+        
+        // Event listener untuk form komentar
+        document.querySelector('.comment-form .comment-submit').addEventListener('click', function() {
+            if (!user) {
+                alert('Silakan login terlebih dahulu untuk menambahkan komentar!');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const commentInput = document.querySelector('.comment-form .comment-input');
+            const commentContent = commentInput.value.trim();
+            
+            if (!commentContent) {
+                alert('Komentar tidak boleh kosong!');
+                return;
+            }
+            
+            // Simulasi request ke API
+            fetch(`/api/stories/${storyId}/comments`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: user.id,
+                    author: user.username,
+                    content: commentContent,
+                    createdAt: new Date().toISOString()
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Reset form
+                    commentInput.value = '';
+                    
+                    // Reload komentar
+                    loadComments(storyId);
+                } else {
+                    throw new Error('Gagal menambahkan komentar');
+                }
+            })
+            .catch(error => {
+                alert('Error: ' + error.message);
+            });
+        });
+        
+        // Load data cerita saat halaman dimuat
+        window.addEventListener('load', loadStoryData);
+    </script>
+</body>
+</html>
