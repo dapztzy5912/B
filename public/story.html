@@ -338,12 +338,13 @@
         <div class="story-header">
             <h1 class="story-title" id="storyTitle">Story Title</h1>
             <div class="story-meta">
-                <div class="author-info" id="authorInfo">
-                    <img src="/api/placeholder/40/40" alt="Author" class="author-img" id="authorImg">
-                    <span class="author-name" id="authorName">Author Name</span>
-                </div>
-                <span class="story-date" id="storyDate">May 18, 2025</span>
-            </div>
+    <div class="author-info" id="authorInfo">
+        <img src="/api/placeholder/40/40" alt="Author" class="author-img" id="authorImg">
+        <span class="author-name" id="authorName">Author Name</span>
+    </div>
+    <button class="action-btn" id="followBtn">Follow</button> <!-- Tambahkan ini -->
+    <span class="story-date" id="storyDate">May 18, 2025</span>
+</div>
             <img src="/api/placeholder/800/400" alt="Story Cover" class="story-cover" id="storyCover">
             <div class="story-actions">
                 <button class="action-btn like-btn" id="likeBtn">❤ Like</button>
@@ -783,6 +784,47 @@
                 }
             });
         });
+        
+        const followBtn = document.getElementById('followBtn');
+
+async function checkFollowStatus(authorId, userId) {
+    try {
+        const response = await fetch(`/api/users/follow/${followerId}/${followingId}`);
+        const data = await response.json();
+        if (data.followed) {
+            followBtn.textContent = "Unfollow";
+        } else {
+            followBtn.textContent = "Follow";
+        }
+    } catch (error) {
+        console.error('Error checking follow status:', error);
+    }
+}
+
+followBtn.addEventListener('click', async () => {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (!currentUser) {
+        loginModal.style.display = 'flex';
+        return;
+    }
+
+    const authorId = document.getElementById('authorInfo').dataset.authorId;
+    const userId = currentUser.id;
+
+    try {
+        const response = await fetch('/api/users/follow', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ followerId: userId, followingId: authorId })
+        });
+
+        if (response.ok) {
+            followBtn.textContent = followBtn.textContent === "Follow" ? "Unfollow" : "Follow";
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+});
     </script>
 </body>
 </html>
